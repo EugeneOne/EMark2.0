@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>emark</title>
+		<link
+			href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/atom-one-dark.min.css"
+			rel="stylesheet"
+		/>
+		<script src="https://at.alicdn.com/t/font_318838_bl8gu5jb4mt.js"></script>
+		<% if (htmlWebpackPlugin.options.nodeModules) { %>
+		<!-- Add `node_modules/` to global paths so `require` works properly in development -->
+		<script>
+			require('module').globalPaths.push('<%= htmlWebpackPlugin.options.nodeModules.replace(/\\/g, '\\\\') %>')
+		</script>
+		<% } %>
+	</head>
+	<body>
+		<div id="app"></div>
+		<!-- Set `__static` path to static files in production -->
+		<% if (!process.browser) { %>
+		<script>
+			if (process.env.NODE_ENV !== 'development')
+				window.__static = require('path')
+					.join(__dirname, '/static')
+					.replace(/\\/g, '\\\\')
+		</script>
+		<% } %>
+
+		<!-- webpack builds are automatically injected -->
+	</body>
+</html>
