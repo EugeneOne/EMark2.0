@@ -1,6 +1,11 @@
 <template>
     <div class="markNav">
         <ul class="editorManu">
+			<li class="f-l editorBtn" @click="showList" title="">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-liebiao"></use>
+                </svg>
+            </li>
             <li class="f-l editorBtn" @click="editor('**加粗内容**')" title="加粗">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-jiacu"></use>
@@ -351,6 +356,10 @@ export default {
 
 		save() {
 			this.$emit('save')
+		},
+		// 展开|收起列表
+		showList() {
+			this.$store.dispatch('showList')
 		},
 		/*保存到云端*/
 		saveToCloud() {

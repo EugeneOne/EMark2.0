@@ -2,7 +2,16 @@
     <div id="markdown">
         <div class="markdownOut">
             <mark-nav @save="dialogAndSave" ref="markNav"></mark-nav>
-            <section>
+			<div :style="{left: [showList ? '0': '-200px' ]}" class="articleList">
+				<header class="articleListHead">
+					头部
+				</header>
+				<div v-for="item in articleList" class="articleListItem">
+					<div>{{ item.title }}</div>
+					<div>{{ item.update_time }}</div>
+				</div>
+			</div>
+            <section :style="{width: [showList ? 'calc(100% - 200px)': '100%' ]}">
                 <input-page :width=inputWidth class="input page" @dialogAndSave="dialogAndSave"></input-page>
                 <output-page :width=outputWidth class="out page"></output-page>
             </section>
@@ -34,6 +43,7 @@ const winURL =
 import fs from 'fs'
 
 export default {
+	name: 'markDownOut',
 	components: {
 		markNav,
 		inputPage,
@@ -42,7 +52,8 @@ export default {
 	data() {
 		return {
 			inputWidth: '50%',
-			outputWidth: '50%'
+			outputWidth: '50%',
+			articleList: []
 		}
 	},
 	computed: {
@@ -54,9 +65,15 @@ export default {
 		},
 		filePath() {
 			return this.$store.state.filePath
+		},
+		showList() {
+			return this.$store.state.showList
 		}
 	},
 	mounted() {
+		this.$http(this.$api.getAllArticle).then(res => {
+			this.articleList = res.data
+		})
 		let self = this
 		ipcRenderer.on('newFile', function(event, filePath, isNew) {
 			// if (filePath && !isNew) {
@@ -498,6 +515,26 @@ export default {
 	.markdownOut {
 		margin: 0 auto;
 		min-height: 800px;
+		.articleList {
+			position: fixed;
+			left: 0;
+			width: 200px;
+			height: 100%;
+			padding: 55px 10px 0;
+			background: #fff;
+			z-index: 9;
+			box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+			transition: all 0.5s;
+			.articleListHead {
+			}
+			.articleListItem {
+				padding: 10px 0;
+				border-bottom: 1px solid #ddd;
+				color: rgb(71, 70, 70);
+				font-size: 14px;
+				margin-top: 10px;
+			}
+		}
 		section {
 			height: 100%;
 			width: 100%;
@@ -506,7 +543,8 @@ export default {
 			justify-content: space-between;
 			position: fixed;
 			top: 0;
-			left: 0;
+			right: 0;
+			transition: all 0.5s;
 			textarea {
 				box-sizing: border-box;
 				height: 100%;

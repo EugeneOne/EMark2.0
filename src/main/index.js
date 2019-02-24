@@ -1,4 +1,10 @@
-import { app, BrowserWindow, ipcMain, webContents } from 'electron'
+import {
+	app,
+	BrowserWindow,
+	ipcMain,
+	webContents,
+	globalShortcut
+} from 'electron'
 
 /**
  * Set `__static` path to static files in production
@@ -23,7 +29,8 @@ function createWindow(path) {
 	mainWindow = new BrowserWindow({
 		height: 750,
 		useContentSize: true,
-		width: 1000
+		width: 1000,
+		webPreferences: { webSecurity: false }
 	})
 	mainWindow.loadURL(winURL)
 	mainWindow.show()
@@ -49,6 +56,12 @@ app.on('open-file', (event, path) => {
 
 app.on('ready', () => {
 	createWindow()
+	globalShortcut.register('CommandOrControl+P', () => {
+		let win = BrowserWindow.getFocusedWindow()
+		if (win) {
+			win.webContents.openDevTools({ detach: true })
+		}
+	})
 })
 
 app.on('activate', () => {

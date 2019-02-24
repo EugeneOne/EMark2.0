@@ -1,5 +1,6 @@
 import Vue from 'vue'
-// import axios from 'axios'
+import Http from '@config/http'
+import Api from '@config/api'
 import App from './App'
 import router from './router'
 import store from './store'
@@ -8,7 +9,8 @@ import ElementUI from 'element-ui'
 import './assets/theme.scss'
 import './assets/reset.css'
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
-// Vue.http = Vue.prototype.$http = axios
+Vue.prototype.$api = Api
+Vue.prototype.$http = Http
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 
