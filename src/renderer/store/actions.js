@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import $http from '@config/http'
+import $api from '@config/api'
 
 export default {
 	sertTxt: ({ commit }, value) => {
@@ -15,5 +17,12 @@ export default {
 	},
 	showList: ({ commit }) => {
 		commit('SHOW_LIST')
+	},
+	getAllTags: ({ commit }) => {
+		return new Promise((resolve, reject) => {
+			$http($api.getAllTags).then(res => {
+				commit('GET_ALL_TAGS', res.data)
+			})
+		})
 	}
 }

@@ -6,7 +6,7 @@
 				<header class="articleListHead">
 					头部
 				</header>
-				<div v-for="item in articleList" class="articleListItem">
+				<div v-for="item in articleList" class="articleListItem" @click="checkArticle(item.id,item.content)">
 					<div>{{ item.title }}</div>
 					<div>{{ item.update_time }}</div>
 				</div>
@@ -71,9 +71,7 @@ export default {
 		}
 	},
 	mounted() {
-		this.$http(this.$api.getAllArticle).then(res => {
-			this.articleList = res.data
-		})
+		this.initAjaxData()
 		let self = this
 		ipcRenderer.on('newFile', function(event, filePath, isNew) {
 			// if (filePath && !isNew) {
@@ -133,6 +131,12 @@ export default {
 	},
 	methods: {
 		changeType() {},
+		initAjaxData() {
+			this.$http(this.$api.getAllArticle).then(res => {
+				this.articleList = res.data
+			})
+			this.$store.dispatch('getAllTags')
+		},
 		openLinkExternal() {
 			document.addEventListener('click', function(e) {
 				if (e.target.tagName.toLowerCase() !== 'a') {
@@ -506,6 +510,10 @@ export default {
 		// 窗口显示
 		screen(value) {
 			this.$refs.markNav.editorModel(value)
+		},
+		checkArticle(id, content) {
+			this.$store.dispatch('sertTxt', content)
+			this.$store.dispatch('showList')
 		}
 	}
 }
@@ -530,9 +538,13 @@ export default {
 			.articleListItem {
 				padding: 10px 0;
 				border-bottom: 1px solid #ddd;
-				color: rgb(71, 70, 70);
+				color: rgba(71, 70, 70, 0.7);
 				font-size: 14px;
 				margin-top: 10px;
+				cursor: pointer;
+				&:hover {
+					color: rgb(15, 15, 15);
+				}
 			}
 		}
 		section {

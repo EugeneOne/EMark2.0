@@ -78,7 +78,7 @@
                     <use xlink:href="#icon-baocun"></use>
                 </svg>
             </li>
-            <li class="f-r editorBtn w66" title="保存" @click="saveToCloud">
+            <li class="f-r editorBtn w66" title="保存" @click="showDialogToCloud">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-shangchuan"></use>
                 </svg>
@@ -88,15 +88,36 @@
             <li class="f-r editorBtn w66" @click="editorModel(2)" title="预览模式">预览</li>
         </ul>
         <el-dialog
-            title="提示"
+            title="选择文章标签"
+			class="toCloudDialog"
             :visible.sync="toCloudDialogVisible"
             :append-to-body="true"
-            width="30%"
+            width="50%"
             center>
-            <span>需要注意的是内容是默认不居中的</span>
+			<el-tag
+				:key="tag.id"
+				v-for="tag in tags"
+				hit
+				@click="checkTag(tag.id)"
+				:disable-transitions="false"
+				:class="[checkTags.includes(tag.id)? 'checkedTag' : '']"
+				>
+				{{tag.value}}
+			</el-tag>
+			<el-input
+				class="input-new-tag"
+				v-if="inputVisible"
+				v-model="inputValue"
+				ref="saveTagInput"
+				size="small"
+				@keyup.enter.native="handleInputConfirm"
+				@blur="handleInputConfirm"
+			>
+			</el-input>
+			<el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="toCloudDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="toCloudDialogVisible = false">确 定</el-button>
+                <el-button type="primary" @click="saveToCloud">保 存</el-button>
             </span>
         </el-dialog>
     </div>
@@ -116,11 +137,17 @@ export default {
 		},
 		isSave() {
 			return this.$store.state.isNeedSave
+		},
+		tags() {
+			return this.$store.state.tags
 		}
 	},
 	data() {
 		return {
-			toCloudDialogVisible: false
+			toCloudDialogVisible: false,
+			inputVisible: false,
+			inputValue: '',
+			checkTags: []
 		}
 	},
 	methods: {
@@ -361,10 +388,38 @@ export default {
 		showList() {
 			this.$store.dispatch('showList')
 		},
-		/*保存到云端*/
-		saveToCloud() {
+		handleInputConfirm() {
+			let inputValue = this.inputValue
+			if (inputValue) {
+				let arr = [...this.tags, { value: inputValue }]
+				// this.dynamicTags.push(inputValue);
+				console.log('arr:', arr)
+			}
+			this.inputVisible = false
+			this.inputValue = ''
+		},
+		// 选择标签
+		checkTag(id) {
+			if (this.checkTags.includes(id)) {
+				this.checkTags = this.checkTags.filter(item => {
+					console.log(item, id)
+					return item != id
+				})
+			} else {
+				this.checkTags.push(id)
+			}
+		},
+		showInput() {
+			this.inputVisible = true
+			this.$nextTick(_ => {
+				this.$refs.saveTagInput.$refs.input.focus()
+			})
+		},
+		showDialogToCloud() {
 			this.toCloudDialogVisible = true
-		}
+		},
+		/*保存到云端*/
+		saveToCloud() {}
 	}
 }
 </script>
@@ -413,6 +468,17 @@ export default {
 				cursor: initial;
 			}
 		}
+	}
+}
+.toCloudDialog {
+	.el-tag {
+		margin: 10px;
+		margin-left: 0;
+		cursor: pointer;
+	}
+	.checkedTag {
+		background: #dd8d8d;
+		color: #fff;
 	}
 }
 </style>

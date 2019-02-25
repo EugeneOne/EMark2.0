@@ -14,5 +14,8 @@ export default {
 	},
 	SHOW_LIST: state => {
 		state.showList = !state.showList
+	},
+	GET_ALL_TAGS: (state, value) => {
+		state.tags = value
 	}
 }

@@ -14,7 +14,8 @@ const store = new Vuex.Store({
 		showType: '3',
 		isNeedSave: false,
 		filePath: '',
-		showList: false
+		showList: false,
+		tags: ''
 	},
 	getters,
 	mutations,

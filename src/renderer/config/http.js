@@ -3,6 +3,7 @@ import { Message, Loading } from 'element-ui'
 import router from '../router'
 
 axios.defaults.timeout = 80000
+axios.defaults.baseURL = 'http://127.0.0.1:3000'
 let loadingInstance = null
 
 // request拦截器
