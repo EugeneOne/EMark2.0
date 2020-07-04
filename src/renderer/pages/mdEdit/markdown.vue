@@ -6,7 +6,7 @@
 				<header class="articleListHead">
 					头部
 				</header>
-				<div v-for="item in articleList" class="articleListItem">
+				<div v-for="(item, index) in articleList" :key="index" class="articleListItem">
 					<div>{{ item.title }}</div>
 					<div>{{ item.update_time }}</div>
 				</div>
@@ -20,9 +20,9 @@
 </template>
 <script>
 // require('animate.css')
-import markNav from './models/markNav.vue'
-import inputPage from './models/inputPage.vue'
-import outputPage from './models/outputPage.vue'
+import markNav from './components/markNav.vue'
+import inputPage from './components/inputPage.vue'
+import outputPage from './components/outputPage.vue'
 
 const remote = require('electron').remote
 const ipcRenderer = require('electron').ipcRenderer

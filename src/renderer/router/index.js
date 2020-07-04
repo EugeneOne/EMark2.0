@@ -6,8 +6,13 @@ export default new Router({
 	routes: [
 		{
 			path: '/',
-			name: 'markdown',
-			component: require('@/components/markdown').default
+			name: 'Login',
+			component: require('@/pages/auth/login').default
+		},
+		{
+			path: '/edit',
+			name: 'Markdown',
+			component: require('@/pages/mdEdit/markdown').default
 		},
 		{
 			path: '*',
