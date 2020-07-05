@@ -2,15 +2,7 @@
     <div id="markdown">
         <div class="markdownOut">
             <mark-nav @save="dialogAndSave" ref="markNav"></mark-nav>
-			<div :style="{left: [showList ? '0': '-200px' ]}" class="articleList">
-				<header class="articleListHead">
-					头部
-				</header>
-				<div v-for="(item, index) in articleList" :key="index" class="articleListItem">
-					<div>{{ item.title }}</div>
-					<div>{{ item.update_time }}</div>
-				</div>
-			</div>
+			<article-list />
             <section :style="{width: [showList ? 'calc(100% - 200px)': '100%' ]}">
                 <input-page :width=inputWidth class="input page" @dialogAndSave="dialogAndSave"></input-page>
                 <output-page :width=outputWidth class="out page"></output-page>
@@ -23,6 +15,7 @@
 import markNav from './components/markNav.vue'
 import inputPage from './components/inputPage.vue'
 import outputPage from './components/outputPage.vue'
+import articleList from './components/articleList.vue'
 
 const remote = require('electron').remote
 const ipcRenderer = require('electron').ipcRenderer
@@ -41,39 +34,36 @@ const winURL =
 		: `file://${__dirname}/index.html`
 
 import fs from 'fs'
+import { mapState, mapActions } from 'vuex'
 
 export default {
 	name: 'markDownOut',
 	components: {
 		markNav,
 		inputPage,
-		outputPage
+		outputPage,
+		articleList
 	},
 	data() {
 		return {
 			inputWidth: '50%',
 			outputWidth: '50%',
-			articleList: []
 		}
 	},
 	computed: {
-		showType() {
-			return this.$store.state.showType
-		},
-		isSave() {
-			return this.$store.state.isNeedSave
-		},
-		filePath() {
-			return this.$store.state.filePath
-		},
-		showList() {
-			return this.$store.state.showList
-		}
+		...mapState({
+			articleList: state => state.article.list,
+			showType: state => state.markDown.showType,
+			isNeedSave: state => state.markDown.isNeedSave,
+			filePath: state => state.markDown.filePath,
+			showList: state => state.markDown.showList,
+		}),
+		
 	},
 	mounted() {
-		this.$http(this.$api.getAllArticle).then(res => {
-			this.articleList = res.data
-		})
+		// this.$http(this.$api.getAllArticle).then(res => {
+		// 	this.articleList = res.data
+		// })
 		let self = this
 		ipcRenderer.on('newFile', function(event, filePath, isNew) {
 			// if (filePath && !isNew) {
@@ -82,9 +72,9 @@ export default {
 			//     self.readFile(filePath)
 			// }
 			/*有未保存文件新文件*/
-			if (!self.filePath && self.isSave) {
+			if (!self.filePath && self.isNeedSave) {
 				self.saveAsFile()
-			} else if (self.isSave) {
+			} else if (self.isNeedSave) {
 				self.saveFile()
 			}
 			console.log('filePath:', filePath)
@@ -93,7 +83,7 @@ export default {
 		window.onbeforeunload = function(e) {
 			console.log('I do not want to be closed')
 			let flage
-			if (self.isSave) {
+			if (self.isNeedSave) {
 				self.saveFile()
 			}
 		}
@@ -132,6 +122,11 @@ export default {
 		}
 	},
 	methods: {
+		...mapActions('markDown', [
+			'sertTxt',
+			'isSave',
+			'setfilePath'
+		]),
 		changeType() {},
 		openLinkExternal() {
 			document.addEventListener('click', function(e) {
@@ -176,6 +171,10 @@ export default {
 			app.dock.setMenu(dockMenu)
 
 			Menu.setApplicationMenu(menu)
+		},
+		// 编辑指定文章
+		editArticle(item) {
+
 		},
 		getMenuData() {
 			let self = this
@@ -451,13 +450,9 @@ export default {
 		},
 		readFile(path) {
 			let self = this
-			console.log('readFile:', path)
-			// focusedWindow.setRepresentedFilename(path)
-
 			fs.readFile(path, 'utf8', function(err, content) {
-				self.$store.dispatch('filePath', path)
-				console.log('content:', content)
-				self.$store.dispatch('sertTxt', content)
+				self.setfilePath(path)
+				self.sertTxt(content)
 			})
 		},
 		saveAsFile() {
@@ -488,8 +483,8 @@ export default {
 				self.$store.state.articleList.content,
 				'utf8'
 			)
-			self.$store.dispatch('isSave', false)
-			self.$store.dispatch('filePath', path)
+			self.isSave(false)
+			self.setfilePath(path)
 		},
 		dialogAndSave() {
 			let self = this
@@ -528,6 +523,7 @@ export default {
 			.articleListHead {
 			}
 			.articleListItem {
+				cursor: pointer;
 				padding: 10px 0;
 				border-bottom: 1px solid #ddd;
 				color: rgb(71, 70, 70);
@@ -541,7 +537,7 @@ export default {
 			display: flex;
 			padding-top: 50px;
 			justify-content: space-between;
-			position: fixed;
+			position: absolute;
 			top: 0;
 			right: 0;
 			transition: all 0.5s;

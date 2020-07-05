@@ -4,7 +4,6 @@ import Api from '@config/api'
 import App from './App'
 import router from './router'
 import store from './store'
-console.log('vue:', Vue)
 import ElementUI from 'element-ui'
 import './assets/theme.scss'
 import './assets/reset.css'

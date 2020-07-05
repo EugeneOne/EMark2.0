@@ -11,7 +11,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
-const proxyTable = require('../src/renderer/config/proxyTable')
+// const proxyTable = require('../src/renderer/config/proxyTable')
 
 /**
  * List of node_modules to include in webpack bundle
@@ -117,7 +117,7 @@ let rendererConfig = {
 		hot: true,
 		open: true,
 		inline: true,
-		proxy: proxyTable
+		// proxy: proxyTable
 	},
 	node: {
 		__dirname: process.env.NODE_ENV !== 'production',
@@ -154,7 +154,8 @@ let rendererConfig = {
 		alias: {
 			'@': path.join(__dirname, '../src/renderer'),
 			vue$: 'vue/dist/vue.esm.js',
-			'@config': path.join(__dirname, '../src/renderer/config')
+			'@config': path.join(__dirname, '../src/renderer/config'),
+			'@api': path.join(__dirname, '../src/renderer/config/api')
 		},
 		extensions: ['.js', '.vue', '.json', '.css', '.node']
 	},

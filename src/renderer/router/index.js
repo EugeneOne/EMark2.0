@@ -10,6 +10,11 @@ export default new Router({
 			component: require('@/pages/auth/login').default
 		},
 		{
+			path: '/article/list',
+			name: 'ArticleList',
+			component: require('@/pages/article/list').default
+		},
+		{
 			path: '/edit',
 			name: 'Markdown',
 			component: require('@/pages/mdEdit/markdown').default

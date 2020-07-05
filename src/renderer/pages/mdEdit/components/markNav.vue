@@ -1,7 +1,7 @@
 <template>
     <div class="markNav">
         <ul class="editorManu">
-			<li class="f-l editorBtn" @click="showList" title="">
+			<li class="f-l editorBtn" @click="articleListSwitch" title="">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-liebiao"></use>
                 </svg>
@@ -73,7 +73,7 @@
             </li>
     
 
-            <li class="f-r editorBtn w66" :class="{hide: !isSave}" title="保存" @click="save">
+            <li class="f-r editorBtn w66" :class="{hide: !isNeedSave}" title="保存" @click="save">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-baocun"></use>
                 </svg>
@@ -102,8 +102,10 @@
     </div>
 </template>
 <script>
+import { mapActions, mapState } from 'vuex'
+
 export default {
-	name: 'Nav',
+	name: 'MdNav',
 	props: {
 		width: {
 			type: String,
@@ -111,12 +113,14 @@ export default {
 		}
 	},
 	computed: {
-		showType() {
-			return this.$store.state.showType
-		},
-		isSave() {
-			return this.$store.state.isNeedSave
-		}
+		...mapState('markDown', {
+			showType: state => state.showType,
+			isNeedSave: state => state.isNeedSave,
+			content: state => state.articleList.content
+		}),
+		...mapState('article', {
+			currentArticle: state => state.current,
+		})
 	},
 	data() {
 		return {
@@ -124,8 +128,15 @@ export default {
 		}
 	},
 	methods: {
+		...mapActions('markDown',[
+			'articleListSwitch',
+			'sertTxt',
+			'setShowType'
+		]),
+		...mapActions('article',[
+			'editArticle',
+		]),
 		editor(value) {
-			console.log('value:', value)
 			let that = this
 			let inputArea = document.getElementById('inputArea')
 			inputArea.focus()
@@ -319,7 +330,7 @@ export default {
 					bCharts
 				)
 			}
-			this.$store.dispatch('sertTxt', newValue)
+			this.sertTxt(newValue)
 		},
 		insertEnd(elem, end, oldValue, insertValue, range1, range2) {
 			let newValue =
@@ -350,16 +361,16 @@ export default {
 			return newValue
 		},
 		editorModel(value) {
-			this.$store.dispatch('showType', value)
+			this.setShowType(value)
 		},
 		/*保存*/
 
 		save() {
-			this.$emit('save')
-		},
-		// 展开|收起列表
-		showList() {
-			this.$store.dispatch('showList')
+			const params = {
+				id: this.currentArticle.article_id || '',
+				content: this.content
+			}
+			this.editArticle(params)
 		},
 		/*保存到云端*/
 		saveToCloud() {
@@ -371,7 +382,7 @@ export default {
 <style lang="scss">
 .markNav {
 	width: 100%;
-	position: fixed;
+	position: absolute;
 	top: 0;
 	z-index: 10;
 	.editorManu {

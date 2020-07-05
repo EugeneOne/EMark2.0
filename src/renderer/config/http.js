@@ -1,8 +1,11 @@
 import axios from 'axios'
 import { Message, Loading } from 'element-ui'
 import router from '../router'
+import HOST from './host';
 
-axios.defaults.timeout = 80000
+axios.defaults.timeout = 80000;
+console.log('HOST:', HOST.host);
+axios.defaults.baseURL = HOST.host;
 let loadingInstance = null
 
 // request拦截器
@@ -31,12 +34,14 @@ axios.interceptors.request.use(
 // response拦截器
 axios.interceptors.response.use(
 	response => {
+		const code = response.data.code;
+		console.log('code:', code);
 		setTimeout(function() {
 			if (loadingInstance) {
 				loadingInstance.close()
 			}
 		}, 250)
-		if (response.data.status == 0) {
+		if (code === 0) {
 			return response.data
 		} else {
 			Message({

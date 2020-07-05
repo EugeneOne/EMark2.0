@@ -1,10 +1,11 @@
 <template>
     <div class="inputPage" :style="{width: width}" ref="inputPage">
-        <textarea @scroll="scroll" id="inputArea" :value="txt" autofocus @input="sertTxt" @drop.stop.prevent='dragging'></textarea>
+        <textarea @scroll="scroll" id="inputArea" :value="txt" autofocus @input="sertTxtStore" @drop.stop.prevent='dragging'></textarea>
     </div>
 </template>
 <script>
-//import * as topMenu from '../../../main/menu.js'
+import { mapState, mapActions } from 'vuex'
+
 export default {
     props: {
         width: {
@@ -18,35 +19,39 @@ export default {
         }
     },
     computed: {
-        txt() {
-            //console.log("input:", this.$store.state.articleList)
-            return this.$store.state.articleList.content
-        },
-        filePath() {
-            return this.$store.state.filePath
-        },
-        isNeedSave() {
-            return this.$store.state.isNeedSave
+        ...mapState({
+            txt: state => state.markDown.txt,
+            filePath: state => state.markDown.filePath,
+            isNeedSave: state => state.markDown.isNeedSave,
+            currentArticle: state => state.article.current
+        })
+    },
+    watch: {
+        currentArticle: {
+            handler(val) {
+                document.getElementById("inputArea").value = val.article_content;
+            },
+            deep: true
         }
     },
     mounted() {
-        console.log("eletron:", this.eletron)
-        console.log("this.$store:", this.$store)
         let textarea = document.getElementById("inputArea");
     },
     methods: {
+        ...mapActions('markDown', [
+            'sertTxt',
+            'isSave',
+            'setfilePath'
+        ]),
         scroll(e) {
             let outPage = document.querySelector(".outerPage");
             let inputTxt = document.querySelector("#inputArea");
             outPage.scrollTop = e.target.scrollTop / inputTxt.scrollHeight * outPage.scrollHeight;
         },
-        sertTxt(e) {
-            let self = this;
+        sertTxtStore(e) {
             let value = e.target.value;
-            console.log("value:", value)
-            self.$store.dispatch('sertTxt', value)
-            self.$store.dispatch('isSave', true);
-            //self.$emit("inputTxt")
+            this.sertTxt(value);
+            this.isSave(true);
         },
         dragging(event) {
             let self = this;
@@ -65,10 +70,10 @@ export default {
                 reader.onload = function (e) {
                     let value = e.target.result;
                     document.getElementById("inputArea").value = e.target.result;
-                    self.$store.dispatch('sertTxt', e.target.result)
+                    self.sertTxt(e.target.result)
                 }
                 //console.log("path:", path)
-                self.$store.dispatch('filePath', path)
+                self.setfilePath(path);
             }
         }
     }

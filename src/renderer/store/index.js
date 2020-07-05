@@ -1,23 +1,19 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import actions from './actions'
-import mutations from './mutations'
-import getters from './getters'
+import Vue from 'vue';
+import Vuex from 'vuex';
+// import createPersistedState from 'vuex-persistedstate';
+import markDown from './modules/markDown';
+import article from './modules/article'
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 const store = new Vuex.Store({
-	state: {
-		articleList: {
-			content: ''
-		},
-		showType: '3',
-		isNeedSave: false,
-		filePath: '',
-		showList: false
-	},
-	getters,
-	mutations,
-	actions
-})
-export default store
+  modules: {
+    markDown,
+    article
+  },
+  strict: process.env.NODE_ENV !== 'production',
+  // vuex持久化，存储到seesionStorage
+  // plugins: [createPersistedState({ storage: window.sessionStorage })],
+});
+
+export default store;

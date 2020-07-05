@@ -1,4 +1,6 @@
 export default {
-	getAllArticle: 'http://127.0.0.1:3000/api/blog/get-all-article',
-	login: 'http://localhost:8090/api/blog/login'
+	getAllArticle: '/api/blog/get-all-article',
+	login: '/api/blog/login',
+	getArticle: '/api/blog/get-article',
+	editArticle: '/api/blog/edit-article'
 }

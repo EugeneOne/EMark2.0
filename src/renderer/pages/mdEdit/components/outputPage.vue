@@ -1,9 +1,11 @@
 <template>
     <div class="outerPage" :style="{width: width}">
-        <div v-html="outTxt" class="outerTxt"></div>
+        <div v-html="toMd" class="outerTxt"></div>
     </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
     props: {
         width: {
@@ -12,9 +14,7 @@ export default {
         }
     },
     computed: {
-        outTxt() {
-            return this.$store.getters.toMd
-        }
+        ...mapGetters('markDown', ['toMd'])
     },
 }
 </script>

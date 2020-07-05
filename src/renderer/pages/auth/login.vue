@@ -24,7 +24,9 @@ export default {
                 password: this.password
             }
             this.$http.post(this.$api.login, params).then(res => {
-                console.log(res);
+                if(res.code === 0) {
+                    this.$router.push({ name: 'ArticleList' })
+                }
             })
         }
     }
